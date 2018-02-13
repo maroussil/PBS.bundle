@@ -1,28 +1,26 @@
-# This would set the search service to search for videos within the PBS website
-#SEARCH_URL	    = 'http://video.pbs.org/search/?q=%s'
-# This uses JSON only searches for full episodes
-SEARCH_URL	    = 'http://www.pbs.org/search-videos/?q=%s&type=episode&callsign=&page=1'
-PBS_URL         = 'http://video.pbs.org'
+SEARCH_URL = 'http://www.pbs.org/search-videos/?q=%s&type=episode&page=1'
+PBS_URL = 'http://www.pbs.org'
 
 ####################################################################################################
 def Search(query):
 
     oc = ObjectContainer(title1='PBS', title2='Search Results')
-    url = SEARCH_URL % String.Quote(query, usePlus=True)
+    url = SEARCH_URL % (String.Quote(query, usePlus=True))
     json = JSON.ObjectFromURL(url)
 
     for video in json['results']['articles']:
-        
-        href = PBS_URL + video['url']
+
+        url = PBS_URL + video['url']
         show_title = video['show_title']
         ep_title = video['title']
         title = '%s | %s' % (show_title, ep_title) 
         duration = Datetime.MillisecondsFromString(video['duration'])
         date = Datetime.ParseDate(video['air_date']).date()
+
         oc.add(VideoClipObject(
+            url = url,
             title = title,
             summary = video['description'],
-            url = href,
             originally_available_at = date,
             duration = duration,
             thumb = Resource.ContentsOfURLWithFallback(url=video['image'])
