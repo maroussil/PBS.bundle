@@ -8,7 +8,13 @@ def Search(query):
     url = SEARCH_URL % (String.Quote(query, usePlus=True))
     json = JSON.ObjectFromURL(url)
 
+    if not 'articles' in json['results']:
+        return oc
+
     for video in json['results']['articles']:
+
+        if video['content_type'] != 'video':
+            continue
 
         url = PBS_URL + video['url']
         show_title = video['show_title']
