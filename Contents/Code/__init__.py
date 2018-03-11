@@ -135,6 +135,9 @@ def ShowJSON(title, slug, thumb):
 	json_url = SEARCH_JSON % (callsign, String.Quote(slug, usePlus=True)) + '&filter_show=' + String.Quote(title, usePlus=False)
 	json = JSON.ObjectFromURL(json_url + '&page=1', headers={"X-Requested-With": "XMLHttpRequest"})
 
+	if len(json['filters']['filter_item_type']['options']) < 1:
+		return ObjectContainer(header="Empty", message="There are no results to list.")
+
 	for section in json['filters']['filter_item_type']['options'][0]['options']:
 
 		section_title = section['label']
@@ -168,7 +171,7 @@ def GetVideos(title, url, section=''):
 		if not url.startswith('http:'):
 			url = BASE_URL + url
 
-		thumbs = video.xpath('.//img/@data-srcset')[0].split(',')[0]
+		thumbs = video.xpath('.//img/@data-srcset')[0].split(',')[0].split('.crop')[0]
 		vid_title = video.xpath('.//p[@class="popover__title"]//text()')[0].strip()
 		summary = video.xpath('.//p[@class="description"]/text()')[0].strip()
 		other_data = video.xpath('.//p[@class="popover__meta-data"]/text()')[0].strip().split(' | ')
